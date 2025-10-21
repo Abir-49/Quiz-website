@@ -9,13 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('results', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+  public function up()
+{
+    Schema::create('results', function (Blueprint $table) {
+        $table->foreignId('s_id')->constrained('students')->onDelete('cascade');
+        $table->foreignId('q_id')->constrained('quizzes')->onDelete('cascade');
+        $table->integer('score');
+        $table->timestamps();
+        
+        $table->primary(['s_id', 'q_id']);
+    });
+}
 
     /**
      * Reverse the migrations.
