@@ -19,4 +19,8 @@ class Teacher extends Authenticatable
                     ->withPivot('status')
                     ->withTimestamps();
     }
+    public function classRequests()
+    {
+        return $this->hasMany(ClassModel::class, 't_id')->where('status', 'pending');
+    }
 }

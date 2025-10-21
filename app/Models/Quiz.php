@@ -21,4 +21,8 @@ class Quiz extends Model
     {
         return $this->hasMany(Result::class, 'q_id');
     }
+     public function students()
+    {
+        return $this->belongsToMany(Student::class, 'results', 'q_id', 's_id')->withPivot('score');
+    }
 }

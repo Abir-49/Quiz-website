@@ -19,4 +19,12 @@ class Student extends Authenticatable
     {
         return $this->hasMany(Result::class, 's_id');
     }
+    public function quizzesTaken()
+    {
+        return $this->belongsToMany(Quiz::class, 'results', 's_id', 'q_id')->withPivot('score');
+    }
+    public function answers()
+    {
+        return $this->hasMany(StudAnsEval::class, 's_id');
+    }
 }

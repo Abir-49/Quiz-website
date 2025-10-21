@@ -6,11 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 class StudAnsEval extends Model
 {
     protected $fillable = ['s_id', 'q_id', 'q_no', 'ans', 'evaluation'];
-    public $incrementing = false;
-    protected $primaryKey = ['s_id', 'q_id', 'q_no'];
+     protected $primaryKey = 'id';
+    public $incrementing = true;
 
     public function student()
     {
         return $this->belongsTo(Student::class, 's_id');
+    }
+     public function quiz()
+    {
+        return $this->belongsTo(Quiz::class, 'q_id');
+    }
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class, 'q_no', 'q_no');
     }
 }

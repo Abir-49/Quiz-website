@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 class Result extends Model
 {
     protected $fillable = ['s_id', 'q_id', 'score'];
-    public $incrementing = false;
+     protected $primaryKey = 'id';
+    public $incrementing = true;
+
 
     public function student()
     {
