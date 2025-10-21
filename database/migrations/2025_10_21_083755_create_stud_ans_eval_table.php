@@ -9,13 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('stud_ans_eval', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+    public function up()
+{
+    Schema::create('stud_ans_evals', function (Blueprint $table) {
+        $table->foreignId('s_id')->constrained('students')->onDelete('cascade');
+        $table->unsignedBigInteger('q_id');
+        $table->integer('q_no');
+        $table->string('ans')->nullable();
+        $table->boolean('evaluation')->nullable(); // 1 for correct, 0 for wrong
+        $table->timestamps();
+        
+        $table->primary(['s_id', 'q_id', 'q_no']);
+        
+        $table->foreign(['q_id', 'q_no'])
+              ->references(['q_id', 'q_no'])
+              ->on('questions')
+              ->onDelete('cascade');
+    });
+}
 
     /**
      * Reverse the migrations.

@@ -9,13 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('quizzes', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+   public function up()
+{
+    Schema::create('quizzes', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('t_id')->constrained('teachers')->onDelete('cascade');
+        $table->string('title');
+        $table->integer('duration'); // in minutes
+        $table->timestamp('creation_time')->useCurrent();
+        $table->timestamp('expire_time')->nullable();
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.
