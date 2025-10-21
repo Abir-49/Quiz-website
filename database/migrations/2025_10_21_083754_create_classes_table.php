@@ -12,12 +12,13 @@ return new class extends Migration
    public function up()
 {
     Schema::create('classes', function (Blueprint $table) {
+        $table->id();
         $table->foreignId('t_id')->constrained('teachers')->onDelete('cascade');
         $table->foreignId('s_id')->constrained('students')->onDelete('cascade');
         $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
         $table->timestamps();
         
-        $table->primary(['t_id', 's_id']);
+        $table->unique(['t_id', 's_id']);
     });
 }
 

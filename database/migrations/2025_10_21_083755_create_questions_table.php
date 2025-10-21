@@ -12,6 +12,7 @@ return new class extends Migration
    public function up()
 {
     Schema::create('questions', function (Blueprint $table) {
+        $table->id();
         $table->foreignId('q_id')->constrained('quizzes')->onDelete('cascade');
         $table->integer('q_no');
         $table->text('question');
@@ -22,7 +23,7 @@ return new class extends Migration
         $table->string('correct_answer');
         $table->timestamps();
         
-        $table->primary(['q_id', 'q_no']);
+        $table->unique(['q_id', 'q_no']);
     });
 }
 

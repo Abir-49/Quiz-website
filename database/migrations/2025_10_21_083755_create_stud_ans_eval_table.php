@@ -12,6 +12,7 @@ return new class extends Migration
     public function up()
 {
     Schema::create('stud_ans_evals', function (Blueprint $table) {
+        $table->id();
         $table->foreignId('s_id')->constrained('students')->onDelete('cascade');
         $table->unsignedBigInteger('q_id');
         $table->integer('q_no');
@@ -19,7 +20,7 @@ return new class extends Migration
         $table->boolean('evaluation')->nullable(); // 1 for correct, 0 for wrong
         $table->timestamps();
         
-        $table->primary(['s_id', 'q_id', 'q_no']);
+        $table->unique(['s_id', 'q_id', 'q_no']);
         
         $table->foreign(['q_id', 'q_no'])
               ->references(['q_id', 'q_no'])
