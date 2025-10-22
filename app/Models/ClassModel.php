@@ -9,6 +9,10 @@ class ClassModel extends Model
     protected $fillable = ['t_id', 's_id', 'status'];
      protected $primaryKey = 'id';
     public $incrementing = true;
+    protected $casts = [
+    'submitted_at' => 'datetime',
+];
+
     public function teacher()
     {
         return $this->belongsTo(Teacher::class, 't_id');

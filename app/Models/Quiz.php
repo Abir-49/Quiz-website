@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 class Quiz extends Model
 {
     protected $fillable = ['t_id', 'title', 'duration', 'creation_time', 'expire_time'];
+protected $casts = [
+    'expire_time' => 'datetime',
+];
 
     public function teacher()
     {

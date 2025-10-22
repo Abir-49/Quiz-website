@@ -8,6 +8,9 @@ class Question extends Model
     protected $fillable = ['q_id', 'q_no', 'question', 'a', 'b', 'c', 'd', 'correct_answer'];
      protected $primaryKey = 'id';
     public $incrementing = true;
+protected $casts = [
+    'submitted_at' => 'datetime',
+];
 
     public function quiz()
     {

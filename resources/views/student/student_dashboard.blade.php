@@ -1,42 +1,40 @@
 @extends('layouts.app')
 
-@section('title', 'Student Dashboard')
-
 @section('content')
 <div class="container">
-    <h2>Welcome, {{ session('student_name') ?? '' }}</h2>
+    <h2>Welcome, {{ Session::get('student_name') }}</h2>
 
-    <div class="stats">
-        <p>Total Quizzes Taken: {{ $total_quiz_taken }}</p>
-        <p>Average Score: {{ $average_score }}%</p>
-    </div>
+    <p>Select an option below:</p>
 
-    <h3>Pending Quizzes</h3>
-    <ul>
-        @foreach($pending_quizzes as $quiz)
-        <li>
-            {{ $quiz->title }} - <a href="{{ route('student.take_quiz',$quiz->id) }}">Take Quiz</a>
-        </li>
-        @endforeach
-    </ul>
+    {{-- Join Classroom Section --}}
+   <a href="{{ route('student.join_class_form') }}">Join a Classroom</a>
 
-    <h3>Quizzes Taken</h3>
-    <ul>
-        @foreach($taken_quizzes as $quiz)
-        <li>
-            {{ $quiz->title }} - Score: {{ $quiz->pivot->score }}% 
-            - <a href="{{ route('student.quiz_result',$quiz->id) }}">View Result</a>
-        </li>
-        @endforeach
-    </ul>
 
-    <h3>Class Join Requests</h3>
-    <ul>
-        @foreach($class_requests as $req)
-        <li>
-            Teacher: {{ $req->teacher->name }} - Status: {{ $req->status }}
-        </li>
-        @endforeach
-    </ul>
+   {{-- Take Quiz Section --}}
+<div class="card" style="margin: 20px 0; padding: 20px; border:1px solid #ccc;">
+    <h3>Available Quizzes</h3>
+
+    @if($availableQuizzes->isEmpty())
+        <p>No quizzes available yet.</p>
+    @else
+        <table border="1" cellpadding="8">
+            <tr>
+                <th>Quiz Title</th>
+                <th>Teacher</th>
+                <th>Action</th>
+            </tr>
+            @foreach($availableQuizzes as $quiz)
+            <tr>
+                <td>{{ $quiz->title }}</td>
+                <td>{{ $quiz->teacher->name }}</td>
+                <td>
+                    <a href="{{ route('student.take_quiz', $quiz->id) }}">Take Quiz</a>
+                </td>
+            </tr>
+            @endforeach
+        </table>
+    @endif
+</div>
+
 </div>
 @endsection

@@ -8,6 +8,9 @@ class Result extends Model
     protected $fillable = ['s_id', 'q_id', 'score'];
      protected $primaryKey = 'id';
     public $incrementing = true;
+protected $casts = [
+    'submitted_at' => 'datetime',
+];
 
 
     public function student()

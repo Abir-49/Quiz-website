@@ -7,6 +7,9 @@ class Teacher extends Authenticatable
 {
     protected $fillable = ['name', 'email', 'password'];
     protected $hidden = ['password'];
+protected $casts = [
+    'submitted_at' => 'datetime',
+];
 
     public function quizzes()
     {

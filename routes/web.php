@@ -4,63 +4,77 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\StudentController;
 
-
-
-// Teacher
-Route::get('/teacher/login', [TeacherController::class,'showLogin'])->name('teacher.login');
-Route::post('/teacher/login', [TeacherController::class,'login']);
-Route::get('/teacher/register', [TeacherController::class,'showRegister'])->name('teacher.register');
-Route::post('/teacher/register', [TeacherController::class,'register']);
-
-// Student
-Route::get('/student/login', [StudentController::class,'showLogin'])->name('student.login');
-Route::post('/student/login', [StudentController::class,'login']);
-Route::get('/student/register', [StudentController::class,'showRegister'])->name('student.register');
-Route::post('/student/register', [StudentController::class,'register']);
-
-
-// Teacher Middleware 
-
-Route::middleware(['teacher.auth'])->group(function() {
-    Route::get('/teacher/dashboard', [TeacherController::class,'dashboard'])->name('teacher.dashboard');
-    Route::get('/teacher/logout', [TeacherController::class,'logout'])->name('teacher.logout');
-
-    // Make quiz
-    Route::get('/teacher/make-quiz', [TeacherController::class,'showMakeQuiz'])->name('teacher.make_quiz');
-    Route::post('/teacher/make-quiz', [TeacherController::class,'storeQuiz']);
-
-    // View quiz results
-    Route::get('/teacher/quiz-results/{quiz_id}', [TeacherController::class,'viewQuizResults'])->name('teacher.quiz_results');
-
-    // Approve/reject student requests
-    Route::get('/teacher/request/approve/{id}', [TeacherController::class,'approveRequest'])->name('teacher.request.approve');
-    Route::get('/teacher/request/reject/{id}', [TeacherController::class,'rejectRequest'])->name('teacher.request.reject');
-
-    // View student answers
-    Route::get('/teacher/quiz/{quiz_id}/student/{student_id}/answers', [TeacherController::class,'viewStudentAnswers'])->name('teacher.student_answers');
-});
-
-
-// Student Middleware 
-
-Route::middleware(['student.auth'])->group(function() {
-    Route::get('/student/dashboard', [StudentController::class,'dashboard'])->name('student.dashboard');
-    Route::get('/student/logout', [StudentController::class,'logout'])->name('student.logout');
-
-    // Join teacher class
-    Route::get('/student/join/{teacher_id}', [StudentController::class,'requestJoin'])->name('student.join_class');
-
-    // Take quiz
-    Route::get('/student/quiz/{quiz_id}/take', [StudentController::class,'takeQuiz'])->name('student.take_quiz');
-    Route::post('/student/quiz/{quiz_id}/submit', [StudentController::class,'submitQuiz'])->name('student.submit_quiz');
-
-    // View quiz result
-    Route::get('/student/quiz/{quiz_id}/result', [StudentController::class,'viewQuizResult'])->name('student.quiz_result');
-});
-
-
-// Home
-
+// ============ HOME ============
 Route::get('/', function() {
     return view('welcome');
 })->name('home');
+
+// ============ TEACHER ROUTES ============
+Route::prefix('teacher')->name('teacher.')->group(function() {
+    
+    // Guest routes
+    Route::middleware('guest')->group(function() {
+        Route::get('/login', [TeacherController::class, 'showLogin'])->name('login');
+        Route::post('/login', [TeacherController::class, 'login']);
+        Route::get('/register', [TeacherController::class, 'showRegister'])->name('register');
+        Route::post('/register', [TeacherController::class, 'register']);
+    });
+
+    // Authenticated routes
+    Route::middleware(['teacher.auth'])->group(function() {
+        Route::get('/dashboard', [TeacherController::class, 'dashboard'])->name('dashboard');
+        Route::get('/logout', [TeacherController::class, 'logout'])->name('logout');
+
+        // Quiz Management
+        Route::get('/make-quiz', [TeacherController::class, 'showMakeQuiz'])->name('makeQuiz');
+        Route::post('/store-quiz', [TeacherController::class, 'storeQuiz'])->name('storeQuiz');
+        Route::get('/quiz/{quiz}/add-questions', [TeacherController::class, 'showAddQuestions'])->name('addQuestions');
+        Route::post('/quiz/{quiz}/store-questions', [TeacherController::class, 'storeQuestions'])->name('storeQuestions');
+        Route::delete('/quiz/{quiz}/question/{question}', [TeacherController::class, 'deleteQuestion'])->name('deleteQuestion');
+        Route::get('/quizzes', [TeacherController::class, 'viewQuizList'])->name('quizList');
+        Route::delete('/quiz/{quiz}', [TeacherController::class, 'deleteQuiz'])->name('deleteQuiz');
+
+        // Quiz Results
+        Route::get('/quiz-results/{quiz}', [TeacherController::class, 'viewQuizResults'])->name('quiz_results');
+        Route::get('/quiz/{quiz}/download-results', [TeacherController::class, 'downloadResults'])->name('download_results');
+        Route::get('/quiz/{quiz}/student/{student}/answers', [TeacherController::class, 'viewStudentAnswers'])->name('student_answers');
+
+        // Class Management
+        Route::get('/request/approve/{id}', [TeacherController::class, 'approveRequest'])->name('request.approve');
+        Route::get('/request/reject/{id}', [TeacherController::class, 'rejectRequest'])->name('request.reject');
+        Route::get('/students', [TeacherController::class, 'viewStudents'])->name('students');
+        Route::delete('/student/{student}/remove', [TeacherController::class, 'removeStudent'])->name('removeStudent');
+    });
+});
+
+// ============ STUDENT ROUTES ============
+Route::prefix('student')->name('student.')->group(function() {
+    
+    // Guest routes
+    Route::middleware('guest')->group(function() {
+        Route::get('/login', [StudentController::class, 'showLogin'])->name('login');
+        Route::post('/login', [StudentController::class, 'login']);
+        Route::get('/register', [StudentController::class, 'showRegister'])->name('register');
+        Route::post('/register', [StudentController::class, 'register']);
+    });
+
+    // Authenticated routes
+    Route::middleware(['student.auth'])->group(function() {
+        Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+        Route::get('/logout', [StudentController::class, 'logout'])->name('logout');
+
+        // Class Management
+        Route::get('/join-class', [StudentController::class, 'showJoinClass'])->name('join_class_form');
+        Route::get('/search-teachers', [StudentController::class, 'searchTeachers'])->name('search_teachers');
+        Route::post('/join', [StudentController::class, 'requestJoin'])->name('join_class');
+        Route::delete('/cancel-request/{teacher}', [StudentController::class, 'cancelRequest'])->name('cancelRequest');
+        Route::delete('/leave-class/{teacher}', [StudentController::class, 'leaveClass'])->name('leaveClass');
+        Route::get('/my-teachers', [StudentController::class, 'myTeachers'])->name('myTeachers');
+
+        // Quiz Taking
+        Route::get('/quiz/{quiz}/take', [StudentController::class, 'takeQuiz'])->name('take_quiz');
+        Route::post('/quiz/{quiz}/submit', [StudentController::class, 'submitQuiz'])->name('submit_quiz');
+        Route::get('/quiz/{quiz}/result', [StudentController::class, 'viewQuizResult'])->name('quiz_result');
+        Route::get('/my-results', [StudentController::class, 'myResults'])->name('myResults');
+    });
+});
