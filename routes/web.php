@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\StudentController;
+use App\Models\Student;
 
 // ============ HOME ============
 Route::get('/', function() {
@@ -36,7 +37,7 @@ Route::prefix('teacher')->name('teacher.')->group(function() {
 
         // Quiz Results
         Route::get('/quiz-results/{quiz}', [TeacherController::class, 'viewQuizResults'])->name('quiz_results');
-        Route::get('/quiz/{quiz}/download-results', [TeacherController::class, 'downloadResults'])->name('download_results');
+        Route::get('/quiz/{quiz}/download-results', [TeacherController::class, 'downloadResults'])->name('download_results_teach');
         Route::get('/quiz/{quiz}/student/{student}/answers', [TeacherController::class, 'viewStudentAnswers'])->name('student_answers');
 
         // Class Management
@@ -62,6 +63,8 @@ Route::prefix('student')->name('student.')->group(function() {
     Route::middleware(['student.auth'])->group(function() {
         Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
         Route::get('/logout', [StudentController::class, 'logout'])->name('logout');
+        Route::get('/class_result/{quiz}/{t_id}', [StudentController::class, 'showQuizResults'])->name('class_result');
+        Route::get('/quiz/{quiz}/{t_id}/download-results', [StudentController::class, 'downloadResults'])->name('download_results_stud');
 
         // Class Management
         Route::get('/join-class', [StudentController::class, 'showJoinClass'])->name('join_class_form');

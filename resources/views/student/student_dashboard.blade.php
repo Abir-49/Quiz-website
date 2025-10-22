@@ -228,7 +228,35 @@
     @endforeach
 </div>
 @endif
-
+<!-- Results -->
+<h2 class="section-title">✅ Results</h2>
+<div class="card">
+    @if($finishedQuizzes->count() > 0)
+        @foreach($finishedQuizzes as $quiz)
+        <div class="quiz-item" style="border-left-color: #6c757d;">
+            <div class="quiz-item-header">
+                <div class="quiz-item-title">{{ $quiz->title }}</div>
+                <div class="quiz-item-teacher">👨‍🏫 {{ $quiz->teacher->name }}</div>
+            </div>
+            <div class="quiz-item-meta">
+                <span>⏱️ Duration: {{ $quiz->duration }} mins</span>
+                <span>📅 Expired: {{ $quiz->expire_time->format('M d, Y h:i A') }}</span>
+                <span>👥 Participants: {{ $quiz->results_count }}</span>
+            </div>
+            <div class="quiz-item-actions">
+                <a href="{{ route('student.class_result', ['quiz' => $quiz->id, 't_id' => $quiz->t_id]) }}" class="btn btn-info btn-sm">
+    View Result
+                </a>
+            </div>
+        </div>
+        @endforeach
+    @else
+        <div class="empty-state">
+            <div class="empty-state-icon">📂</div>
+            <p>No results yet</p>
+        </div>
+    @endif
+</div>
 <!-- Available Quizzes -->
 <h2 class="section-title">📝 Available Quizzes</h2>
 @if($availableQuizzes->count() > 0)
@@ -242,7 +270,7 @@
             <div class="quiz-card-meta">
                 ⏱️ Duration: {{ $quiz->duration }} minutes<br>
                 ⏰ Expires: {{ $quiz->expire_time->format('M d, Y h:i A') }}<br>
-                <span class="{{ $quiz->expire_time->diffInHours(now()) < 24 ? 'text-danger' : 'text-success' }}">
+                <span class="{{ $quiz->expire_time->diffInHours(Carbon\Carbon::now('Asia/Dhaka')) < 24 ? 'text-danger' : 'text-success' }}">
                     {{ $quiz->expire_time->diffForHumans() }}
                 </span>
             </div>

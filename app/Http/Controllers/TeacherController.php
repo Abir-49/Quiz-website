@@ -150,7 +150,7 @@ class TeacherController extends Controller
             't_id' => $teacher_id,
             'title' => $request->title,
             'duration' => $request->duration,
-            'creation_time' => now(),
+            'creation_time' => Carbon::now('Asia/Dhaka'),
             'expire_time' => $request->expire_time,
         ]);
 
@@ -278,57 +278,91 @@ class TeacherController extends Controller
         $averagePercentage = $totalParticipants > 0 
             ? round($participants->avg('percentage'), 2) 
             : 0;
-
+$leaderboard = $participants->sortByDesc('percentage')->values();
         return view('teacher.class_quiz_result', compact(
             'quiz',
             'participants',
             'absentStudents',
             'totalParticipants',
             'absentCount',
-            'averagePercentage'
+            'averagePercentage',
+            'leaderboard'
         ));
     }
 
-    public function downloadResults($quiz_id)
-    {
-        $teacher_id = Session::get('teacher_id');
+   public function downloadResults($quiz_id)
+{
+    $teacher_id = Session::get('teacher_id');
+    
+    $quiz = Quiz::where('id', $quiz_id)
+        ->where('t_id', $teacher_id)
+        ->with(['results.student'])
+        ->firstOrFail();
+
+    // Get all approved students
+    $allStudentIds = ClassModel::where('t_id', $teacher_id)
+        ->where('status', 'approved')
+        ->pluck('s_id');
+
+    $participants = $quiz->results;
+    $participantIds = $participants->pluck('s_id');
+    
+    // Absent students
+    $absentStudentIds = $allStudentIds->diff($participantIds);
+    $absentStudents = Student::whereIn('id', $absentStudentIds)->get();
+
+    // Sort participants by percentage in descending order
+    $leaderboard = $participants->sortByDesc('percentage')->values();
+
+    $filename = "quiz_{$quiz_id}_results_" . date('Y-m-d') . ".csv";
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"$filename\"",
+    ];
+
+    $callback = function() use ($quiz, $leaderboard, $absentStudents) {
+        $file = fopen('php://output', 'w');
         
-        $quiz = Quiz::where('id', $quiz_id)
-            ->where('t_id', $teacher_id)
-            ->with(['results.student'])
-            ->firstOrFail();
+        // Header row
+        fputcsv($file, ['Rank', 'Student Name', 'Roll', 'Email', 'Score', 'Total Marks', 'Percentage', 'Submitted At', 'Status']);
 
-        $filename = "quiz_{$quiz_id}_results_" . date('Y-m-d') . ".csv";
+        // Data rows for participants
+        $rank = 1;
+        foreach ($leaderboard as $result) {
+            fputcsv($file, [
+                $rank++,
+                $result->student->name,
+                $result->student->roll,
+                $result->student->email,
+                $result->score,
+                $result->total_marks,
+                $result->percentage . '%',
+                $result->submitted_at->format('Y-m-d H:i:s'),
+                'Participated'
+            ]);
+        }
 
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ];
+        // Data rows for absent students
+        foreach ($absentStudents as $student) {
+            fputcsv($file, [
+                $rank++,
+                $student->name,
+                $student->roll,
+                $student->email,
+                '0',
+                $quiz->questions->sum('marks'), // Total possible marks
+                '0%',
+                '-',
+                'Absent'
+            ]);
+        }
 
-        $callback = function() use ($quiz) {
-            $file = fopen('php://output', 'w');
-            
-            // Header row
-            fputcsv($file, ['Student Name', 'Roll', 'Email', 'Score', 'Total Marks', 'Percentage', 'Submitted At']);
+        fclose($file);
+    };
 
-            // Data rows
-            foreach ($quiz->results as $result) {
-                fputcsv($file, [
-                    $result->student->name,
-                    $result->student->roll,
-                    $result->student->email,
-                    $result->score,
-                    $result->total_marks,
-                    $result->percentage . '%',
-                    $result->submitted_at->format('Y-m-d H:i:s'),
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
+    return response()->stream($callback, 200, $headers);
+}
 
     public function viewStudentAnswers($quiz_id, $student_id)
     {
@@ -370,7 +404,7 @@ class TeacherController extends Controller
             ->firstOrFail();
 
         $request->status = 'approved';
-        $request->responded_at = now();
+        $request->responded_at = Carbon::now('Asia/Dhaka');
         $request->save();
 
         return back()->with('success', 'Student approved successfully');
@@ -386,7 +420,7 @@ class TeacherController extends Controller
             ->firstOrFail();
 
         $request->status = 'rejected';
-        $request->responded_at = now();
+        $request->responded_at = Carbon::now('Asia/Dhaka');
         $request->save();
 
         return back()->with('info', 'Request rejected');
