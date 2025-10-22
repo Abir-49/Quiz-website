@@ -1,19 +1,23 @@
 @extends('layouts.app')
 
-@section('title', 'Quiz Results')
+@section('title', 'Leaderboard')
 
 @section('navbar')
 <div class="navbar">
-    <a href="{{ route('teacher.dashboard') }}" class="navbar-brand">📚 Quiz System</a>
+    <a href="{{ route('student.dashboard') }}" class="navbar-brand">📚 Quiz System</a>
     <div class="navbar-menu">
-        <a href="{{ route('teacher.dashboard') }}">Dashboard</a>
-        <a href="{{ route('teacher.quizList') }}">My Quizzes</a>
-        <a href="{{ route('teacher.logout') }}" class="logout-btn">Logout</a>
+        <a href="{{ route('student.dashboard') }}">Dashboard</a>
+        <a href="{{ route('student.myTeachers') }}">My Teachers</a>
+        <a href="{{ route('student.myResults') }}">My Results</a>
+        <a href="{{ route('student.search_teachers') }}" class="btn btn-success">Join New Class</a>
+        <a href="{{ route('student.logout') }}" class="logout-btn">Logout</a>
     </div>
 </div>
 @endsection
 
 @section('content')
+
+
 <style>
     .results-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -161,6 +165,7 @@
 <div class="results-header">
     <h1>📊 Quiz Results: {{ $quiz->title }}</h1>
     <div class="results-meta">
+        <span>👨‍🏫 Created by: {{ $quiz->teacher->name }}</span>
         <span>⏱️ Duration: {{ $quiz->duration }} minutes</span>
         <span>📅 Expired: {{ $quiz->expire_time->format('M d, Y h:i A') }}</span>
         <span>❓ Total Questions: {{ $quiz->questions->count() }}</span>
@@ -186,7 +191,7 @@
     <div class="result-stat-card">
         <div class="result-stat-icon">📥</div>
         <div class="result-stat-value">
-            <a href="{{ route('teacher.download_results', $quiz->id) }}" 
+            <a href="{{ route('student.download_results_stud', ['quiz' => $quiz->id, 't_id' => $quiz->t_id]) }}" 
                class="btn btn-success btn-sm" style="font-size: 14px;">
                 Download CSV
             </a>
@@ -194,7 +199,13 @@
         <div class="result-stat-label">Export Results</div>
     </div>
 </div>
-
+<div class="result-stat-card">
+        <div class="result-stat-icon">🏅</div>
+        <div class="result-stat-value">
+            {{ $position }}{{ substr(date("jS", mktime(0, 0, 0, 1, $position, 2000)), -2) }}
+        </div>
+        <div class="result-stat-label">Your Position</div>
+    </div>
 <!-- Participants -->
 <div class="card">
     <div class="card-header">
@@ -233,18 +244,12 @@
                     {{ number_format($result->percentage, 1) }}%
                 </span>
             </div>
-            <div>
-                <a href="{{ route('teacher.student_answers', [$quiz->id, $result->student->id]) }}" 
-                   class="btn btn-info btn-sm">
-                    View Answers
-                </a>
-            </div>
         </div>
         @endforeach
     @else
         <div class="empty-state">
             <div class="empty-state-icon">👥</div>
-            <p>No students have taken this quiz yet</p>
+            <p>No students have taken this quiz</p>
         </div>
     @endif
 </div>

@@ -75,7 +75,7 @@
                 <label for="expire_time">Expiry Date & Time *</label>
                 <input type="datetime-local" id="expire_time" name="expire_time" 
                        class="form-control" value="{{ old('expire_time') }}" required
-                       min="{{ now()->format('Y-m-d\TH:i') }}">
+                       min="{{  Carbon\Carbon::now('Asia/Dhaka')->format('Y-m-d\TH:i') }}">
                 <div class="form-help">After this time, students won't be able to take the quiz</div>
             </div>
 

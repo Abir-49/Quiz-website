@@ -138,6 +138,11 @@ class StudentController extends Controller
             ->where('status', 'pending')
             ->with('teacher')
             ->get();
+// Finished quizzes (expired) from approved teachers
+$finishedQuizzes = Quiz::whereIn('t_id', $approvedTeacherIds)
+    ->where('expire_time', '<', Carbon::now('Asia/Dhaka'))
+    ->with('teacher')
+    ->get();
 
         return view('student.student_dashboard', compact(
             'student',
@@ -147,7 +152,8 @@ class StudentController extends Controller
             'quizzesTaken',
             'missedQuizzes',
             'subscribedTeachers',
-            'pendingRequests'
+            'pendingRequests',
+            'finishedQuizzes'
         ));
     }
 
@@ -413,5 +419,122 @@ class StudentController extends Controller
             ->paginate(10);
 
         return view('student.my_results', compact('results'));
+    }
+     
+   public function downloadResults($quiz_id, $teacher_id)
+{
+    
+    
+    $quiz = Quiz::where('id', $quiz_id)
+        ->where('t_id', $teacher_id)
+        ->with(['results.student'])
+        ->firstOrFail();
+
+    // Get all approved students
+    $allStudentIds = ClassModel::where('t_id', $teacher_id)
+        ->where('status', 'approved')
+        ->pluck('s_id');
+
+    $participants = $quiz->results;
+    $participantIds = $participants->pluck('s_id');
+    
+    // Absent students
+    $absentStudentIds = $allStudentIds->diff($participantIds);
+    $absentStudents = Student::whereIn('id', $absentStudentIds)->get();
+
+    // Sort participants by percentage in descending order
+    $leaderboard = $participants->sortByDesc('percentage')->values();
+
+    $filename = "quiz_{$quiz_id}_results_" . date('Y-m-d') . ".csv";
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"$filename\"",
+    ];
+
+    $callback = function() use ($quiz, $leaderboard, $absentStudents) {
+        $file = fopen('php://output', 'w');
+        
+        // Header row
+        fputcsv($file, ['Rank', 'Student Name', 'Roll', 'Email', 'Score', 'Total Marks', 'Percentage', 'Submitted At', 'Status']);
+
+        // Data rows for participants
+        $rank = 1;
+        foreach ($leaderboard as $result) {
+            fputcsv($file, [
+                $rank++,
+                $result->student->name,
+                $result->student->roll,
+                $result->student->email,
+                $result->score,
+                $result->total_marks,
+                $result->percentage . '%',
+                $result->submitted_at->format('Y-m-d H:i:s'),
+                'Participated'
+            ]);
+        }
+
+        // Data rows for absent students
+        foreach ($absentStudents as $student) {
+            fputcsv($file, [
+                $rank++,
+                $student->name,
+                $student->roll,
+                $student->email,
+                '0',
+                $quiz->questions->sum('marks'), // Total possible marks
+                '0%',
+                '-',
+                'Absent'
+            ]);
+        }
+
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+    public function showQuizResults($quiz_id,$teacher_id)
+    {
+        $student_id = Session::get('student_id');
+        
+        $quiz = Quiz::where('id', $quiz_id)
+            ->where('t_id', $teacher_id)
+            ->with(['results.student', 'questions'])
+            ->firstOrFail();
+
+        // Get all approved students
+        $allStudentIds = ClassModel::where('t_id', $teacher_id)
+            ->where('status', 'approved')
+            ->pluck('s_id');
+
+        $participants = $quiz->results;
+        $participantIds = $participants->pluck('s_id');
+        
+        // Absent students
+        $absentStudentIds = $allStudentIds->diff($participantIds);
+        $absentStudents = Student::whereIn('id', $absentStudentIds)->get();
+
+        // Calculate statistics
+        $totalParticipants = $participants->count();
+        $absentCount = $absentStudents->count();
+        $averagePercentage = $totalParticipants > 0 
+            ? round($participants->avg('percentage'), 2) 
+            : 0;
+
+    $leaderboard = $participants->sortByDesc('percentage')->values();
+    $position = $leaderboard->search(function($result) use ($student_id) {
+    return $result->s_id === $student_id;
+}) + 1;
+        return view('student.class_result', compact(
+            'quiz',
+            'participants',
+            'absentStudents',
+            'totalParticipants',
+            'absentCount',
+            'averagePercentage',
+            'leaderboard',
+            'position'
+        ));
     }
 }

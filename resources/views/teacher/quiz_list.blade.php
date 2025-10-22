@@ -113,10 +113,10 @@
 @if($quizzes->count() > 0)
     <div class="quiz-grid">
         @foreach($quizzes as $quiz)
-        <div class="quiz-card {{ $quiz->expire_time < now() ? 'expired' : '' }}">
+        <div class="quiz-card {{ $quiz->expire_time < Carbon\Carbon::now('Asia/Dhaka') ? 'expired' : '' }}">
             <div class="quiz-card-header">
                 <div class="quiz-title">{{ $quiz->title }}</div>
-                @if($quiz->expire_time < now())
+                @if($quiz->expire_time < Carbon\Carbon::now('Asia/Dhaka'))
                     <span class="badge badge-danger">Expired</span>
                 @else
                     <span class="badge badge-success">Active</span>
@@ -128,7 +128,7 @@
                 <div>📅 Created: {{ $quiz->creation_time->format('M d, Y') }}</div>
                 <div>⏰ Expires: {{ $quiz->expire_time->format('M d, Y h:i A') }}</div>
                 <div>
-                    @if($quiz->expire_time < now())
+                    @if($quiz->expire_time < Carbon\Carbon::now('Asia/Dhaka'))
                         <span style="color: #dc3545;">⏰ Expired {{ $quiz->expire_time->diffForHumans() }}</span>
                     @else
                         <span style="color: #28a745;">⏰ Expires {{ $quiz->expire_time->diffForHumans() }}</span>
