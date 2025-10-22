@@ -118,10 +118,6 @@
                 </div>
 
                 <div class="teacher-actions">
-                    <form action="{{ route('student.search_teachers') }}" method="GET">
-                        <button type="submit" class="view-btn">View Quizzes</button>
-                    </form>
-
                     <form action="{{ route('student.leaveClass', $teacher->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to leave this class?')">
                         @csrf
                         @method('DELETE')

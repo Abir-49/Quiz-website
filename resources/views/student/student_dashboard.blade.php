@@ -229,7 +229,7 @@
 </div>
 @endif
 <!-- Results -->
-<h2 class="section-title">✅ Results</h2>
+<h2 class="section-title">📊 Results</h2>
 <div class="card">
     @if($finishedQuizzes->count() > 0)
         @foreach($finishedQuizzes as $quiz)
@@ -296,7 +296,7 @@
 @endif
 
 <!-- Recent Results -->
-<h2 class="section-title">📊 Recent Quiz Results</h2>
+<h2 class="section-title">✅ Done</h2>
 <div class="card">
     @if($quizzesTaken->count() > 0)
         @foreach($quizzesTaken as $result)
