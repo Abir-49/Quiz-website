@@ -7,6 +7,7 @@ class Quiz extends Model
 {
     protected $fillable = ['t_id', 'title', 'duration', 'creation_time', 'expire_time'];
 protected $casts = [
+    'creation_time' => 'datetime',
     'expire_time' => 'datetime',
 ];
 

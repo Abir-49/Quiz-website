@@ -11,6 +11,7 @@ use App\Models\ClassModel;
 use App\Models\Question;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
 
 class StudentController extends Controller
 {
@@ -104,7 +105,7 @@ class StudentController extends Controller
 
         // Get all quizzes from approved teachers
         $allQuizzes = Quiz::whereIn('t_id', $approvedTeacherIds)
-            ->where('expire_time', '>=', now())
+            ->where('expire_time', '>=', Carbon::now('Asia/Dhaka'))
             ->with('teacher')
             ->get();
 
@@ -123,7 +124,7 @@ class StudentController extends Controller
 
         // Total missed quizzes (expired but not taken)
         $missedQuizzes = Quiz::whereIn('t_id', $approvedTeacherIds)
-            ->where('expire_time', '<', now())
+            ->where('expire_time', '<', Carbon::now('Asia/Dhaka'))
             ->whereNotIn('id', $takenQuizIds)
             ->count();
 
@@ -205,7 +206,7 @@ class StudentController extends Controller
             } else {
                 // Rejected - allow to request again
                 $existing->status = 'pending';
-                $existing->requested_at = now();
+                $existing->requested_at = Carbon::now('Asia/Dhaka');
                 $existing->responded_at = null;
                 $existing->save();
                 return back()->with('success', 'Join request sent again');
@@ -216,7 +217,7 @@ class StudentController extends Controller
             't_id' => $teacher_id,
             's_id' => $student_id,
             'status' => 'pending',
-            'requested_at' => now(),
+            'requested_at' => Carbon::now('Asia/Dhaka'),
         ]);
 
         return back()->with('success', 'Join request sent successfully');
@@ -279,7 +280,7 @@ class StudentController extends Controller
         }
 
         // Check if quiz is still active
-        if ($quiz->expire_time < now()) {
+        if ($quiz->expire_time < Carbon::now('Asia/Dhaka')) {
             return redirect()
                 ->route('student.dashboard')
                 ->with('error', 'This quiz has expired');
@@ -376,7 +377,7 @@ class StudentController extends Controller
             'score' => $totalScore,
             'total_marks' => $totalMarks,
             'percentage' => round($percentage, 2),
-            'submitted_at' => now(),
+            'submitted_at' => Carbon::now('Asia/Dhaka'),
         ]);
 
         return redirect()

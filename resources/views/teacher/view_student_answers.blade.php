@@ -248,7 +248,7 @@
         <div class="summary-label">Total Marks</div>
     </div>
     <div class="summary-card">
-        <div class="summary-value" style="color: {{ $result->percentage >= 60 ? '#28a745' : '#dc3545' }};">
+        <div class="summary-value" style="color: <?php echo $result->percentage >= 60 ? '#28a745' : '#dc3545'; ?>">
             {{ number_format($result->percentage, 1) }}%
         </div>
         <div class="summary-label">Percentage</div>

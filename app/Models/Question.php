@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    protected $fillable = ['q_id', 'q_no', 'question', 'a', 'b', 'c', 'd', 'correct_answer'];
+    protected $fillable = ['q_id', 'q_no', 'question', 'a', 'b', 'c', 'd', 'correct_answer', 'type', 'marks'];
      protected $primaryKey = 'id';
     public $incrementing = true;
 protected $casts = [

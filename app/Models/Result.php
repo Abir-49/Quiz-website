@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Result extends Model
 {
-    protected $fillable = ['s_id', 'q_id', 'score'];
+    protected $fillable = ['s_id', 'q_id', 'score', 'submitted_at','total_marks','percentage'];
      protected $primaryKey = 'id';
     public $incrementing = true;
 protected $casts = [

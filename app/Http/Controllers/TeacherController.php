@@ -89,14 +89,14 @@ class TeacherController extends Controller
         $total_quizzes = $teacher->quizzes->count();
         
         $finished_quizzes = $teacher->quizzes()
-            ->where('expire_time', '<', now())
+            ->where('expire_time', '<', Carbon::now('Asia/Dhaka'))
             ->withCount('results')
             ->orderBy('expire_time', 'desc')
             ->take(5)
             ->get();
         
         $pending_quizzes = $teacher->quizzes()
-            ->where('expire_time', '>=', now())
+            ->where('expire_time', '>=', Carbon::now('Asia/Dhaka'))
             ->withCount('results')
             ->orderBy('expire_time', 'asc')
             ->take(5)

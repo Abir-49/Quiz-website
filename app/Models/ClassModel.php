@@ -6,12 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 class ClassModel extends Model
 {
     protected $table = 'classes';
-    protected $fillable = ['t_id', 's_id', 'status'];
+    protected $fillable = ['t_id', 's_id', 'status', 'requested_at','responded_at',];
      protected $primaryKey = 'id';
     public $incrementing = true;
     protected $casts = [
-    'submitted_at' => 'datetime',
-];
+        'requested_at' => 'datetime',
+        'responded_at' => 'datetime',
+    ];
 
     public function teacher()
     {
