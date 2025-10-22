@@ -186,7 +186,7 @@
     <div class="result-stat-card">
         <div class="result-stat-icon">📥</div>
         <div class="result-stat-value">
-            <a href="{{ route('teacher.download_results', $quiz->id) }}" 
+            <a href="{{ route('teacher.download_results_teach', $quiz->id) }}" 
                class="btn btn-success btn-sm" style="font-size: 14px;">
                 Download CSV
             </a>
