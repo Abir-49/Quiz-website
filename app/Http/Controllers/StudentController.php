@@ -525,7 +525,8 @@ $finishedQuizzes = Quiz::whereIn('t_id', $approvedTeacherIds)
     $leaderboard = $participants->sortByDesc('percentage')->values();
     $position = $leaderboard->search(function($result) use ($student_id) {
     return $result->s_id === $student_id;
-}) + 1;
+});
+$position = $position !== false ? $position + 1 : null;
         return view('student.class_result', compact(
             'quiz',
             'participants',

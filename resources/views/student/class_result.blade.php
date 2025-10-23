@@ -202,7 +202,11 @@
 <div class="result-stat-card">
         <div class="result-stat-icon">🏅</div>
         <div class="result-stat-value">
+            @if($position !== null)
             {{ $position }}{{ substr(date("jS", mktime(0, 0, 0, 1, $position, 2000)), -2) }}
+        @else
+            Not Attempted
+        @endif
         </div>
         <div class="result-stat-label">Your Position</div>
     </div>
