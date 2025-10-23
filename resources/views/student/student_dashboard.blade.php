@@ -28,11 +28,32 @@
         margin-bottom: 10px;
     }
 
-    .quick-actions {
+    .quiz-actions {
         display: flex;
-        gap: 15px;
-        margin-top: 20px;
-        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 15px;
+        justify-content: flex-end;
+    }
+
+    .quiz-actions .btn {
+        min-width: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .quiz-actions .btn-info {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border: none;
+        color: white;
+        padding: 8px 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .quiz-actions .btn-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
     }
 
     .section-title {
@@ -243,7 +264,11 @@
                 <span>📅 Expired: {{ $quiz->expire_time->format('M d, Y h:i A') }}</span>
                 <span>👥 Participants: {{ $quiz->results_count }}</span>
             </div>
-            <div class="quiz-item-actions">
+             <div class="quiz-actions">
+                <a href="{{ route('student.quiz_result', $quiz->id) }}" class="btn btn-info btn-sm">
+                    Answer Script
+                </a>
+           
                 <a href="{{ route('student.class_result', ['quiz' => $quiz->id, 't_id' => $quiz->t_id]) }}" class="btn btn-info btn-sm">
     View Result
                 </a>
@@ -312,11 +337,7 @@
                 <div class="score-value">{{ number_format($result->percentage, 1) }}%</div>
                 <div class="score-label">{{ $result->score }}/{{ $result->total_marks }}</div>
             </div>
-            <div>
-                <a href="{{ route('student.quiz_result', $result->quiz->id) }}" class="btn btn-info btn-sm">
-                    View Details
-                </a>
-            </div>
+           
         </div>
         @endforeach
         

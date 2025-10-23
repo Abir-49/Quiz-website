@@ -97,7 +97,7 @@
                         Teacher: {{ $result->quiz->teacher->name ?? 'N/A' }}
                     </div>
                 </div>
-                <a href="{{ route('student.quiz_result', $result->quiz->id) }}" class="btn-view">View Details</a>
+                <a href="{{ route('student.quiz_result', $result->quiz->id) }}" class="btn-view">Answer Script</a>
             </div>
 
             <div class="result-stats">

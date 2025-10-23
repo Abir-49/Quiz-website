@@ -134,7 +134,7 @@
     @else
         <div class="no-teachers">
             You are not enrolled in any classes yet.<br>
-            <a href="{{ route('join_class_form') }}" class="btn btn-success" style="margin-top: 10px;">Join New Class</a>
+            <a href="{{ route('student.join_class_form') }}" class="btn btn-success" style="margin-top: 10px;">Join New Class</a>
         </div>
     @endif
 </div>

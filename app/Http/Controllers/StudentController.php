@@ -387,7 +387,7 @@ $finishedQuizzes = Quiz::whereIn('t_id', $approvedTeacherIds)
         ]);
 
         return redirect()
-            ->route('student.quiz_result', $quiz_id)
+            ->route('student.dashboard', $quiz_id)
             ->with('success', 'Quiz submitted successfully!');
     }
 
