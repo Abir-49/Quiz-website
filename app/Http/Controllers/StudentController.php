@@ -526,7 +526,6 @@ $finishedQuizzes = Quiz::whereIn('t_id', $approvedTeacherIds)
     $position = $leaderboard->search(function($result) use ($student_id) {
     return $result->s_id === $student_id;
 });
-$position = $position !== false ? $position + 1 : null;
         return view('student.class_result', compact(
             'quiz',
             'participants',
