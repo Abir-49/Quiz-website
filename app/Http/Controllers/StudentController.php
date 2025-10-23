@@ -405,8 +405,11 @@ $finishedQuizzes = Quiz::whereIn('t_id', $approvedTeacherIds)
             ->where('q_id', $quiz_id)
             ->get()
             ->keyBy('q_no');
-
-        return view('student.quiz_result', compact('quiz', 'result', 'answers'));
+        $expired=true;
+        if($quiz->expire_time >= Carbon::now('Asia/Dhaka')){
+            $expired=false;
+        }
+        return view('student.quiz_result', compact('quiz', 'result', 'answers','expired'));
     }
 
     public function myResults()

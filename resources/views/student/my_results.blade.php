@@ -17,6 +17,33 @@
 
 @section('content')
 <style>
+      .quiz-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        justify-content: flex-end;
+    }
+
+    .quiz-actions .btn {
+        min-width: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .quiz-actions .btn-info {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border: none;
+        color: white;
+        padding: 8px 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .quiz-actions .btn-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+    }
     .result-card {
         background: white;
         border-radius: 10px;
@@ -25,6 +52,7 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         transition: transform 0.2s;
     }
+
     .result-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 5px 20px rgba(0,0,0,0.15);
@@ -93,13 +121,22 @@
             <div class="result-header">
                 <div>
                     <div class="quiz-title">{{ $result->quiz->title ?? 'Untitled Quiz' }}</div>
+                    
                     <div class="teacher-name">
                         Teacher: {{ $result->quiz->teacher->name ?? 'N/A' }}
                     </div>
-                </div>
-                <a href="{{ route('student.quiz_result', $result->quiz->id) }}" class="btn-view">Answer Script</a>
+                    @if($result->quiz->expired)
+                    <div class="quiz-actions">
+                <a href="{{ route('student.quiz_result', $result->$quiz->id) }}" class="btn btn-info btn-sm">
+                    Answer Script
+                </a>
+           
+                <a href="{{ route('student.class_result', ['quiz' => $result->$quiz->id, 't_id' => $result->$quiz->t_id]) }}" class="btn btn-info btn-sm">
+    View Result
+                </a>
             </div>
-
+                
+                    @endif
             <div class="result-stats">
                 <div><strong>Score:</strong> {{ $result->score }} / {{ $result->total_marks }}</div>
                 <div><strong>Percentage:</strong> {{ $result->percentage }}%</div>
